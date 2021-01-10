@@ -13,7 +13,7 @@ This is a 2D Platformer Game, developed with the [Unity 2D](https://unity.com/) 
 
 ## Screenshots
 
-![Giff](Docs/giff/giff1.giff)
-![Giff](Docs/giff/giff2.giff)
-![Giff](Docs/giff/giff3.giff)
-![Giff](Docs/giff/giff4.giff)
+![Giff](Docs/giff/giff1.gif)
+![Giff](Docs/giff/giff2.gif)
+![Giff](Docs/giff/giff3.gif)
+![Giff](Docs/giff/giff4.gif)
