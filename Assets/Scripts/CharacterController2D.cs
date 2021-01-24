@@ -120,15 +120,10 @@ public class CharacterController2D : MonoBehaviour {
 		Jump();
 
 
-		// if moving up then don't collide with platform layer
-		// this allows the player to jump up through things on the platform layer
-		// NOTE: requires the platforms to be on a layer named "Platform"
-		//Physics2D.IgnoreLayerCollision(_playerLayer, _platformLayer, (_vy > 0.0f)); 
+		
 	}
 
-	// Checking to see if the sprite should be flipped
-	// this is done in LateUpdate since the Animator may override the localScale
-	// this code will flip the player even if the animator is controlling scale
+	
 	void LateUpdate()
 	{
 		// get the current scale

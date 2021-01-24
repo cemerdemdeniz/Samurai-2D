@@ -20,6 +20,7 @@ public class Enemy : MonoBehaviour {
 	float _vx = 0f;
 	bool _moving = true;
 	
+	
 	// store the layer number the enemy is on (setup in Awake)
 	int _enemyLayer;
 
@@ -31,7 +32,8 @@ public class Enemy : MonoBehaviour {
 	[Range(0f, 10f)]
 	public float moveSpeed = 4f;  // enemy move speed when moving
 	public int damageAmount = 10; // probably deal a lot of damage to kill player immediately
-	public int health = 100;
+	public int maxhealth = 100;
+	int currentHealth;
 	public GameObject stunnedCheck; // what gameobject is the stunnedCheck
 
 	public float stunnedTime = 3f;   // how long to wait at a waypoint
@@ -51,27 +53,17 @@ public class Enemy : MonoBehaviour {
 	public AudioClip stunnedSFX;
 	public AudioClip attackSFX;
 	#endregion
-	#region Public Variables 2
-	public Transform rayCast;
-	public LayerMask raycastMask;
-	public float RaycastLengt;
+	public bool _movingToWp;
+	bool isInRange; 
 	public float attackDistance;
-	public float timer;
-	#endregion
-	#region Private Variables
-	private RaycastHit2D hit;
-	private GameObject target;
-	private float distance; // distance b/w enemy and player
-	private bool attackMode;
-	private bool inRange; // check if player in range
-	private bool cooling; // cool down after attack
-	private float intTimer;
-	
-    #endregion
+	public float attackRange;
 
 
 
-    void Awake() {
+
+
+
+	void Awake() {
 		// get a reference to the components we are going to be changing and store a reference for efficiency purposes
 		_transform = GetComponent<Transform> ();
 		
@@ -97,6 +89,7 @@ public class Enemy : MonoBehaviour {
 		// setup moving defaults
 		_moveTime = 0f;
 		_moving = true;
+		_movingToWp = true;
 		
 		// determine the enemies specified layer
 		_enemyLayer = this.gameObject.layer;
@@ -104,89 +97,58 @@ public class Enemy : MonoBehaviour {
 		// determine the stunned enemy layer number
 		_stunnedLayer = LayerMask.NameToLayer(stunnedLayer);
 
-		intTimer = timer;//store the initial value of timer
+		
 		
 
 		// make sure collision are off between the playerLayer and the stunnedLayer
 		// which is where the enemy is placed while stunned
 		Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer(playerLayer), _stunnedLayer,  true) ;
+
+		currentHealth = maxhealth;
 		
 	}
 	
 	// if not stunned then move the enemy when time is > _moveTime
 	void Update () {
-		if (!isStunned)
+		if (_movingToWp)
 		{
-			if (Time.time >= _moveTime) {
-				EnemyMovement();
-				
-			} else {
-				_animator.SetBool("Moving", false);
+			if (!isStunned)
+			{
+				if (Time.time >= _moveTime)
+				{
+					EnemyMovement();
+				}
 			}
 		}
-		if (health <= 0)
+		else
 		{
-			Destroy(gameObject);
+			_animator.SetBool("Moving", false);
 		}
-		if (inRange)
-		{
-			hit = Physics2D.Raycast(rayCast.position, Vector2.left, RaycastLengt, raycastMask);
-			RayCastDebugger();
-		}
-		//when player is Detected
-		if (hit.collider != null)
-		{
-			EnemyLogic();
-		}
-		else if (hit.collider==null)
-		{
-			inRange = false;
-		}
-		if (inRange == false)
-		{
-			
-			StopAttack();
-		}
-
-		if (health <= 0)
-		{
-			Death();
-		}
-
-	}
-
-	void EnemyLogic()
-	{
-		distance = Vector2.Distance(transform.position, target.transform.position);
-
-		if (distance > attackDistance)
-		{
-			EnemyMovement();
-			StopAttack();
-		}
-		else if ( attackDistance >=distance && cooling == false)
-		{
-			Attacking();
-		}
-		if (cooling)
-		{
-			//anim . set bool attack false
-			_animator.SetBool("Attack", false);
-		}
-	}
-	void RayCastDebugger()
-	{
-		if(distance > attackDistance)
-		{
-			Debug.DrawRay(rayCast.position, Vector2.left * RaycastLengt, Color.red);
-		}
-		else if (attackDistance > distance)
-		{
-			Debug.DrawRay(rayCast.position, Vector2.left * RaycastLengt, Color.blue);
-		}
-	}
 	
-	// Move the enemy through its rigidbody based on its waypoints
+			
+				
+		
+
+	}
+
+	public void TakeDamage(int damage)
+	{
+		currentHealth -= damage;
+		
+		_animator.SetTrigger("Hurt");
+				
+		if (currentHealth <= 0)
+		{
+			_animator.SetBool("Die", true);
+			Diee((2));
+
+		}
+	}
+
+	
+	
+	
+	
 	void EnemyMovement() {
 		// if there isn't anything in My_Waypoints
 		if ((myWaypoints.Length != 0) && (_moving)) {
@@ -231,7 +193,8 @@ public class Enemy : MonoBehaviour {
 		
 		// get the current scale
 		Vector3 localScale = _transform.localScale;
-		
+
+
 		if ((_vx>0f)&&(localScale.x<0f))
 			localScale.x*=-1;
 		else if ((_vx<0f)&&(localScale.x>0f))
@@ -241,24 +204,13 @@ public class Enemy : MonoBehaviour {
 		_transform.localScale = localScale;
 	}
 
-	void Attacking ()
-	{
-		timer = intTimer;
-		attackMode = true;
-		_animator.SetBool("Moving", false);
-		_animator.SetBool("Attack", true);
-	}
-	void StopAttack()
-	{
-		cooling = false;
-		attackMode = false;
-		_animator.SetBool("Attack", false);
-	}
 	
-	// Attack player
+	
+	
 	void OnTriggerEnter2D(Collider2D collision)
 	{
-		if ((collision.tag == "Player") && !isStunned)
+		
+		if ((collision.tag == "GroundCheck") && !isStunned)
 		{
 			CharacterController2D player = collision.gameObject.GetComponent<CharacterController2D>();
 			if (player.playerCanMove) {
@@ -277,16 +229,9 @@ public class Enemy : MonoBehaviour {
 				_moveTime = Time.time + stunnedTime;
 			}
 		}
-		if (collision.gameObject.tag == "Player")
-		{
-			target = collision.gameObject;
-			inRange = true;
-		}
-		if (collision.gameObject.tag == "Sword")
-		{
-			
-			
-		}
+		
+		
+		
 		
 	}
 	
@@ -344,9 +289,9 @@ public class Enemy : MonoBehaviour {
 	
 	void Death ()
 	{
-		    StartCoroutine(Diee());
-			Destroy(this.gameObject);
 		
+			    
+				
 	}
 	
 	
@@ -366,9 +311,14 @@ public class Enemy : MonoBehaviour {
 		// provide the player with feedback
 		_animator.SetTrigger("Stand");
 	}
-	IEnumerator Diee()
+	IEnumerator Diee(float delay)
 	{
-		yield return new WaitForSeconds(2);
-		_animator.SetTrigger("Die");
+		if (currentHealth == 0) { 
+		}
+		yield return new WaitForSeconds(delay);
+		Destroy(this.gameObject);
+
+
+
 	}
 }

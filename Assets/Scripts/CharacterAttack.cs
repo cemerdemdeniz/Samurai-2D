@@ -3,62 +3,68 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class CharacterAttack : MonoBehaviour
-{   
-    public float attackRangeX;
-    public float attackRangeY;
-
+{
 
     private Animator anim;
     public Transform attackPosition;
-   
-    public float attackRange;
-    public LayerMask whatIsEnemy;
-    public int damage;
+    public float radiusOfAttack;
+    public LayerMask Enemy;
+
+    public int attackDamage = 40;
+
     public AudioClip attackSound;
     AudioSource _audio;
 
-     void Start()
+    void Start()
     {
         anim = GetComponent<Animator>();
-        _audio = GetComponent<AudioSource>(); 
+        _audio = GetComponent<AudioSource>();
 
     }
-     void Update()
+    void Update()
     {
-        
-        {
-            if (Input.GetKeyDown(KeyCode.K))
-            {
-                
-                Attack();
-                PlaySound(attackSound);
-                
-            }
-            
-        }
-        
+        Attack();
     }
     void Attack()
     {
-        anim.SetTrigger("Attack");
-        Collider2D[] enemiesToDamage = Physics2D.OverlapBoxAll(attackPosition.position, new Vector2(attackRangeX, attackRangeY), 0, whatIsEnemy);
-        foreach (Collider2D enemy in enemiesToDamage)
+        if (Input.GetKeyDown(KeyCode.K))
         {
-            Debug.Log("We hit" + enemy.name);
+            anim.SetBool("Attack", true);
+            
         }
+
+        
+        Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(attackPosition.position, radiusOfAttack, Enemy);  
+        
+       
+        
+
+        foreach (Collider2D enemy in hitEnemies)
+        {
+
+
+            if (hitEnemies != null)
+            {
+                enemy?.GetComponent<Enemy>().TakeDamage(attackDamage);
+                enemy.GetComponent<Enemy>()._movingToWp = false;
+
+            }
+            
+
+
+        }      
         
 
     }
-    void PlaySound(AudioClip clip)
+    
+
+    private void OnDrawGizmosSelected()
     {
-        _audio.PlayOneShot(clip);
+        if (attackPosition == null)
+            return;
+        Gizmos.DrawWireSphere(attackPosition.position, radiusOfAttack);
     }
 
-    void OnDrawGizmosSelected()
-    {
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireCube(attackPosition.position,new Vector3(attackRangeX,attackRangeY,1));
-    }
 
 }
 
