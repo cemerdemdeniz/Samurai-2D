@@ -38,6 +38,9 @@ public class GameManager : MonoBehaviour {
 
 		// setup all the variables, the UI, and provide errors if things not setup properly.
 		setupDefaults();
+		
+		
+
 	}
 
 	// game loop

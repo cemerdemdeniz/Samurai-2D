@@ -12,6 +12,9 @@ public class CharacterAttack : MonoBehaviour
 
     public int attackDamage = 40;
 
+    private float nextAttackTime=0f;
+    public float attackRate=2f;
+
     public AudioClip attackSound;
     AudioSource _audio;
 
@@ -27,11 +30,17 @@ public class CharacterAttack : MonoBehaviour
     }
     void Attack()
     {
-        if (Input.GetKeyDown(KeyCode.K))
+        if (Time.time >= nextAttackTime)
         {
-            anim.SetBool("Attack", true);
-            
+            if (Input.GetKeyDown(KeyCode.K))
+            {
+                anim.SetBool("Attack", true);
+                nextAttackTime = Time.time + 1f / attackRate;
+                
+
+            }
         }
+       
 
         
         Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(attackPosition.position, radiusOfAttack, Enemy);  
@@ -45,7 +54,8 @@ public class CharacterAttack : MonoBehaviour
 
             if (hitEnemies != null)
             {
-                enemy?.GetComponent<Enemy>().TakeDamage(attackDamage);
+                enemy.GetComponent<Enemy>().TakeDamage(attackDamage/8);
+                Debug.Log(attackDamage);
                 enemy.GetComponent<Enemy>()._movingToWp = false;
 
             }

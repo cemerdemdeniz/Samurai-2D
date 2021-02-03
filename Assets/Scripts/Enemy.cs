@@ -130,7 +130,7 @@ public class Enemy : MonoBehaviour {
 		
 
 	}
-
+	
 	public void TakeDamage(int damage)
 	{
 		currentHealth -= damage;
@@ -140,8 +140,9 @@ public class Enemy : MonoBehaviour {
 		if (currentHealth <= 0)
 		{
 			_animator.SetBool("Die", true);
-			Diee((2));
-
+			
+			StartCoroutine(Diee(2));
+			
 		}
 	}
 
@@ -287,12 +288,7 @@ public class Enemy : MonoBehaviour {
 		}
 	}
 	
-	void Death ()
-	{
-		
-			    
-				
-	}
+	
 	
 	
 	
@@ -313,8 +309,12 @@ public class Enemy : MonoBehaviour {
 	}
 	IEnumerator Diee(float delay)
 	{
-		if (currentHealth == 0) { 
-		}
+
+		isStunned = true;
+		this.transform.GetComponent<BoxCollider2D>().enabled = false;
+		this.transform.GetComponent<CircleCollider2D>().enabled = false;
+		this.transform.GetChild(2).gameObject.SetActive(false);
+		Destroy(_rigidbody);
 		yield return new WaitForSeconds(delay);
 		Destroy(this.gameObject);
 
