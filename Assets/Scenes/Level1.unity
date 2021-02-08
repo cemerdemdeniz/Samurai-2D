@@ -1425,9 +1425,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 735841194}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 55482d796d5dea94694fd47bfb155e19, type: 3}
+  m_Script: {fileID: 11500000, guid: 7b5fe78bb6f7bff4f92f06c90f393e74, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  coinValue: 1
+  taken: 0
+  explosion: {fileID: 0}
 --- !u!58 &735841196
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -2688,9 +2691,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 1148923752}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 55482d796d5dea94694fd47bfb155e19, type: 3}
+  m_Script: {fileID: 11500000, guid: 7b5fe78bb6f7bff4f92f06c90f393e74, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  coinValue: 1
+  taken: 0
+  explosion: {fileID: 0}
 --- !u!58 &1148923754
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -3423,9 +3429,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 1525867733}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 55482d796d5dea94694fd47bfb155e19, type: 3}
+  m_Script: {fileID: 11500000, guid: 7b5fe78bb6f7bff4f92f06c90f393e74, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  coinValue: 1
+  taken: 0
+  explosion: {fileID: 0}
 --- !u!58 &1525867735
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -3709,7 +3718,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1f182509550b7ca48b892f7e6575683d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  EnemyDiePopUpBallonPrefab: {fileID: 3165148271277984399, guid: f1a004057eb304e4896afd87b4cbe2d6,
+  EnemyDiePopUpBallonPrefab: {fileID: 6073371429933430186, guid: f1a004057eb304e4896afd87b4cbe2d6,
+    type: 3}
+  EnemyBloodParticular: {fileID: 24449049521337141, guid: 72604a0e5e8efe6438ace64a959a5ce8,
     type: 3}
   moveSpeed: 2
   damageAmount: 10
@@ -4128,9 +4139,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 1976882786}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 55482d796d5dea94694fd47bfb155e19, type: 3}
+  m_Script: {fileID: 11500000, guid: 7b5fe78bb6f7bff4f92f06c90f393e74, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  coinValue: 1
+  taken: 0
+  explosion: {fileID: 0}
 --- !u!58 &1976882788
 CircleCollider2D:
   m_ObjectHideFlags: 0

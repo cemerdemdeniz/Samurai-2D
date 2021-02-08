@@ -7,6 +7,7 @@ public class Enemy : MonoBehaviour {
 
 
 	public GameObject EnemyDiePopUpBallonPrefab;
+	public GameObject EnemyBloodParticular; 
 	
 	// store references to components on the gameObject
 	Transform _transform;
@@ -136,13 +137,18 @@ public class Enemy : MonoBehaviour {
 				
 		if (currentHealth <= 0)
 		{
-			
-			
+
+			var _blood = Instantiate(EnemyBloodParticular, transform.position, Quaternion.identity);
 			Instantiate(EnemyDiePopUpBallonPrefab, transform.position,Quaternion.identity);
 			_animator.SetBool("Die", true);			
 			StartCoroutine(Diee(3));
 			Destroy(this.gameObject, 3);
-			Destroy(EnemyDiePopUpBallonPrefab, 2);
+			Destroy(_blood.gameObject, 3);
+
+			
+			
+			
+			
 		}
 	}
 
