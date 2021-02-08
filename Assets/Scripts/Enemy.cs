@@ -2,11 +2,11 @@
 using System.Collections;
 
 public class Enemy : MonoBehaviour {
-	
 
-	
-	
-	// private variables below
+
+
+
+	public GameObject EnemyDiePopUpBallonPrefab;
 	
 	// store references to components on the gameObject
 	Transform _transform;
@@ -97,9 +97,6 @@ public class Enemy : MonoBehaviour {
 		// determine the stunned enemy layer number
 		_stunnedLayer = LayerMask.NameToLayer(stunnedLayer);
 
-		
-		
-
 		// make sure collision are off between the playerLayer and the stunnedLayer
 		// which is where the enemy is placed while stunned
 		Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer(playerLayer), _stunnedLayer,  true) ;
@@ -139,10 +136,13 @@ public class Enemy : MonoBehaviour {
 				
 		if (currentHealth <= 0)
 		{
-			_animator.SetBool("Die", true);
 			
-			StartCoroutine(Diee(2));
 			
+			Instantiate(EnemyDiePopUpBallonPrefab, transform.position,Quaternion.identity);
+			_animator.SetBool("Die", true);			
+			StartCoroutine(Diee(3));
+			Destroy(this.gameObject, 3);
+			Destroy(EnemyDiePopUpBallonPrefab, 2);
 		}
 	}
 
@@ -309,16 +309,22 @@ public class Enemy : MonoBehaviour {
 	}
 	IEnumerator Diee(float delay)
 	{
-
+		Destroy(_rigidbody);
+		
 		isStunned = true;
 		this.transform.GetComponent<BoxCollider2D>().enabled = false;
 		this.transform.GetComponent<CircleCollider2D>().enabled = false;
 		this.transform.GetChild(2).gameObject.SetActive(false);
-		Destroy(_rigidbody);
+		
 		yield return new WaitForSeconds(delay);
-		Destroy(this.gameObject);
+		
+		
+		
+
 
 
 
 	}
+
+	
 }

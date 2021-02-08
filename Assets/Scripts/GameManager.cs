@@ -37,7 +37,7 @@ public class GameManager : MonoBehaviour {
 			gm = this.GetComponent<GameManager>();
 
 		// setup all the variables, the UI, and provide errors if things not setup properly.
-		setupDefaults();
+		SetupDefaults();
 		
 		
 
@@ -58,7 +58,7 @@ public class GameManager : MonoBehaviour {
 	}
 
 	// setup all the variables, the UI, and provide errors if things not setup properly.
-	void setupDefaults() {
+	void SetupDefaults() {
 		// setup reference to player
 		if (_player == null)
 			_player = GameObject.FindGameObjectWithTag("Player");
@@ -97,14 +97,14 @@ public class GameManager : MonoBehaviour {
 			Debug.LogError ("Need to set UIGamePaused on Game Manager.");
 		
 		// get stored player prefs
-		refreshPlayerState();
+		RefreshPlayerState();
 
 		// get the UI ready for the game
-		refreshGUI();
+		RefreshGuı();
 	}
 
 	// get stored Player Prefs if they exist, otherwise go with defaults set on gameObject
-	void refreshPlayerState() {
+	void RefreshPlayerState() {
 		lives = PlayerPrefManager.GetLives();
 
 		// special case if lives <= 0 then must be testing in editor, so reset the player prefs
@@ -122,7 +122,7 @@ public class GameManager : MonoBehaviour {
 	}
 
 	// refresh all the GUI elements
-	void refreshGUI() {
+	void RefreshGuı() {
 		// set the text elements of the UI
 		UIScore.text = "Score: "+score.ToString();
 		UIHighScore.text = "Highscore: "+highscore.ToString ();
@@ -158,7 +158,7 @@ public class GameManager : MonoBehaviour {
 	public void ResetGame() {
 		// remove life and update GUI
 		lives--;
-		refreshGUI();
+		RefreshGuı();
 
 		if (lives<=0) { // no more lives
 			// save the current player prefs before going to GameOver
