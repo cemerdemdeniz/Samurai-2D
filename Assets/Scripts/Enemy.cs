@@ -137,7 +137,8 @@ public class Enemy : MonoBehaviour {
 				
 		if (currentHealth <= 0)
 		{
-
+			var _effectAfterDeath = Camera.main.GetComponent<RipplePostProcessor>();
+			_effectAfterDeath.SceenEffectAfterDeath();
 			var _blood = Instantiate(EnemyBloodParticular, transform.position, Quaternion.identity);
 			Instantiate(EnemyDiePopUpBallonPrefab, transform.position,Quaternion.identity);
 			_animator.SetBool("Die", true);			
