@@ -24,6 +24,7 @@ public class GameManager : MonoBehaviour {
 	public Text UILevel;
 	public GameObject[] UIExtraLives;
 	public GameObject UIGamePaused;
+	public GameObject UIHealthBar; 
 
 	// private variables
 	GameObject _player;

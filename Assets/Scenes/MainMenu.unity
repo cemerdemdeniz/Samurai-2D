@@ -1337,11 +1337,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 1081908539}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 27637ef4c7c08744cbfd2f095fd5c9da, type: 3}
+  m_Script: {fileID: 11500000, guid: d172065aaecf78e4f944cd4b4b8b725e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MainMenuObj: {fileID: 1081908539}
-  HowToPlayMenu: {fileID: 1290142024}
 --- !u!114 &1081908541
 MonoBehaviour:
   m_ObjectHideFlags: 0

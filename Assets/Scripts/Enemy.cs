@@ -321,7 +321,7 @@ public class Enemy : MonoBehaviour {
 		isStunned = true;
 		this.transform.GetComponent<BoxCollider2D>().enabled = false;
 		this.transform.GetComponent<CircleCollider2D>().enabled = false;
-		this.transform.GetChild(2).gameObject.SetActive(false);
+		this.transform.GetChild(1).gameObject.SetActive(false);
 		
 		yield return new WaitForSeconds(delay);
 		

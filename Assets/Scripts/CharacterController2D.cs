@@ -154,6 +154,7 @@ public class CharacterController2D : MonoBehaviour {
 		{
 			this.transform.parent = other.transform;
 		}
+		
 	}
 
 	// if the player exits a collision with a moving platform, then unchild it
