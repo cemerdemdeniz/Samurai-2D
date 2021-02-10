@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+
 public class Enemy : MonoBehaviour {
 
 
@@ -55,9 +56,30 @@ public class Enemy : MonoBehaviour {
 	public AudioClip attackSFX;
 	#endregion
 	public bool _movingToWp;
-	bool isInRange; 
+
+	#region
+	public Transform rayCast;
+	public LayerMask raycastMask;
+	public float raycastLength;
+	public float _moveSpeed;
+	public float timer;
+    
 	public float attackDistance;
 	public float attackRange;
+
+	#endregion
+
+	private RaycastHit2D hit;
+	private GameObject target;
+	private float distance;
+	private bool attackMode;
+	private bool inRange;
+	private bool cooling;
+	private float intTimer;
+
+	private float attackRate = 2f;
+	private float nextAttackTime = 0f;
+
 
 
 
@@ -66,31 +88,19 @@ public class Enemy : MonoBehaviour {
 
 	void Awake() {
 		// get a reference to the components we are going to be changing and store a reference for efficiency purposes
-		_transform = GetComponent<Transform> ();
-		
-		_rigidbody = GetComponent<Rigidbody2D> ();
-		if (_rigidbody==null) // if Rigidbody is missing
-			Debug.LogError("Rigidbody2D component missing from this gameobject");
-		
-		_animator = GetComponent<Animator>();
-		if (_animator==null) // if Animator is missing
-			Debug.LogError("Animator component missing from this gameobject");
-		
-		_audio = GetComponent<AudioSource> ();
-		if (_audio==null) { // if AudioSource is missing
-			Debug.LogWarning("AudioSource component missing from this gameobject. Adding one.");
-			// let's just add the AudioSource component dynamically
-			_audio = gameObject.AddComponent<AudioSource>();
-		}
-
-		if (stunnedCheck==null) {
-			Debug.LogError("stunnedCheck child gameobject needs to be setup on the enemy");
-		}
+		_transform = GetComponent<Transform> ();		
+		_rigidbody = GetComponent<Rigidbody2D> ();		
+		_animator = GetComponent<Animator>();		
+		_audio = GetComponent<AudioSource> ();		
+		_audio = gameObject.AddComponent<AudioSource>();		
 		
 		// setup moving defaults
 		_moveTime = 0f;
 		_moving = true;
 		_movingToWp = true;
+
+		intTimer = timer;
+
 		
 		// determine the enemies specified layer
 		_enemyLayer = this.gameObject.layer;
@@ -108,8 +118,12 @@ public class Enemy : MonoBehaviour {
 	
 	// if not stunned then move the enemy when time is > _moveTime
 	void Update () {
+
+		
+
 		if (_movingToWp)
 		{
+			
 			if (!isStunned)
 			{
 				if (Time.time >= _moveTime)
@@ -122,15 +136,51 @@ public class Enemy : MonoBehaviour {
 		{
 			_animator.SetBool("Moving", false);
 		}
-	
-			
-				
+
+
+		if (inRange)
+		{
+
+			hit = Physics2D.Raycast(rayCast.position, Vector2.left, raycastLength,raycastMask);
+			RaycastDebugger();
+
+		}
+
+		if(hit.collider != null)
+		{
+			EnemyLogic();
+		}else if (hit.collider == null)
+		{
+			inRange = false;
+		}
+
+		//if ( inRange == false)
+		//{
+		//	_movingToWp = false;
+		//	StopAttack();
+		//}
+
+
 		
 
+
+
+	}
+
+	void RaycastDebugger()
+	{
+		if(distance > attackDistance)
+		{
+			Debug.DrawRay(rayCast.position, Vector2.left * raycastLength, Color.red);
+		}else if ( attackDistance > distance)
+		{
+			Debug.DrawRay(rayCast.position, Vector2.left * raycastLength, Color.green);
+		}
 	}
 	
 	public void TakeDamage(int damage)
 	{
+		
 		currentHealth -= damage;
 		
 		_animator.SetTrigger("Hurt");
@@ -153,48 +203,52 @@ public class Enemy : MonoBehaviour {
 		}
 	}
 
-	
-	
-	
-	
-	void EnemyMovement() {
-		// if there isn't anything in My_Waypoints
-		if ((myWaypoints.Length != 0) && (_moving)) {
-			
+	public void EnemyMovement()
+	{
+		if ((myWaypoints.Length != 0) && (_moving))
+		{
+
 			// make sure the enemy is facing the waypoint (based on previous movement)
-			Flip (_vx);
-			
+			Flip(_vx);
+
 			// determine distance between waypoint and enemy
-			_vx = myWaypoints[_myWaypointIndex].transform.position.x-_transform.position.x;
-			
+			_vx = myWaypoints[_myWaypointIndex].transform.position.x - _transform.position.x;
+
 			// if the enemy is close enough to waypoint, make it's new target the next waypoint
-			if (Mathf.Abs(_vx) <= 0.05f) {
+			if (Mathf.Abs(_vx) <= 0.05f)
+			{
 				// At waypoint so stop moving
 				_rigidbody.velocity = new Vector2(0, 0);
-				
+
 				// increment to next index in array
 				_myWaypointIndex++;
-				
+
 				// reset waypoint back to 0 for looping
-				if(_myWaypointIndex >= myWaypoints.Length) {
+				if (_myWaypointIndex >= myWaypoints.Length)
+				{
 					if (loopWaypoints)
 						_myWaypointIndex = 0;
 					else
 						_moving = false;
 				}
-				
-				// setup wait time at current waypoint
-				_moveTime = Time.time + waitAtWaypointTime;
-			} else {
+
+
+			_moveTime = Time.time + waitAtWaypointTime;
+			}
+			else
+			{
 				// enemy is moving
 				_animator.SetBool("Moving", true);
-				
+
 				// Set the enemy's velocity to moveSpeed in the x direction.
-				_rigidbody.velocity = new Vector2(_transform.localScale.x * moveSpeed, _rigidbody.velocity.y);
+				_rigidbody.velocity = new Vector2(_transform.localScale.x* moveSpeed, _rigidbody.velocity.y);
 			}
-			
+
 		}
 	}
+
+	
+		
 	
 	// flip the enemy to face torward the direction he is moving in
 	void Flip(float _vx) {
@@ -212,6 +266,50 @@ public class Enemy : MonoBehaviour {
 		_transform.localScale = localScale;
 	}
 
+
+	void EnemyLogic()
+	{
+		distance = Vector2.Distance(transform.position, target.transform.position);
+		if (distance > attackDistance)
+		{
+			_movingToWp = true;
+			EnemyMovement();
+			StopAttack();
+		}
+		else if ( attackDistance >= distance && cooling == false)
+		{
+			Attack();
+		}
+		if (cooling)
+		{
+			_animator.SetBool("Attack", false);
+		}
+
+	} 
+
+	void Attack()
+	{
+		
+		if (Time.time > nextAttackTime)
+		{
+
+			_animator.SetBool("Attack", true);
+			nextAttackTime = Time.time + 5f / attackRate;
+			
+		}
+		timer = intTimer;
+		attackMode = true;
+		_movingToWp = false;
+		
+	}
+
+	void StopAttack()
+	{
+		cooling = false;
+		attackMode = false;
+		_animator.SetBool("Attack", false);
+	}
+
 	
 	
 	
@@ -226,7 +324,7 @@ public class Enemy : MonoBehaviour {
 				Flip(collision.transform.position.x-_transform.position.x);
 				
 				// attack sound
-				playSound(attackSFX);
+				PlaySound(attackSFX);
 				
 				// stop moving
 				_rigidbody.velocity = new Vector2(0, 0);
@@ -237,14 +335,19 @@ public class Enemy : MonoBehaviour {
 				_moveTime = Time.time + stunnedTime;
 			}
 		}
+
+
+		if (collision.gameObject.tag == "Player")
+		{
+			target = collision.gameObject;
+			inRange = true;
+		}
 		
 		
 		
 		
 	}
 	
-	// if the Enemy collides with a MovingPlatform, then make it a child of that platform
-	// so it will go for a ride on the MovingPlatform
 	void OnCollisionEnter2D(Collision2D other)
 	{
 		if (other.gameObject.tag=="MovingPlatform")
@@ -256,7 +359,7 @@ public class Enemy : MonoBehaviour {
 		
 	}
 	
-	// if the enemy exits a collision with a moving platform, then unchild it
+	
 	void OnCollisionExit2D(Collision2D other)
 	{
 		if (other.gameObject.tag=="MovingPlatform")
@@ -265,8 +368,8 @@ public class Enemy : MonoBehaviour {
 		}
 	}
 	
-	// play sound through the audiosource on the gameobject
-	void playSound(AudioClip clip)
+	
+	void PlaySound(AudioClip clip)
 	{
 		//_audio.PlayOneShot(clip);
 	}
@@ -279,7 +382,7 @@ public class Enemy : MonoBehaviour {
 			isStunned = true;
 			
 			// provide the player with feedback that enemy is stunned
-			playSound(stunnedSFX);
+			PlaySound(stunnedSFX);
 			_animator.SetTrigger("Stunned");
 			
 			
